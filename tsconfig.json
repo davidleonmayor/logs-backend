@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./",
     "lib": [
       "esnext"
     ],
@@ -16,6 +16,7 @@
     "emitDecoratorMetadata": true,
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "db/**model/*.ts"
   ]
 }

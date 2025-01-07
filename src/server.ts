@@ -1,7 +1,8 @@
-import express, { Request, Response, NextFunction, urlencoded } from "express";
+import express, { urlencoded } from "express";
 import morgan from "morgan";
 
 import { companieRouter } from "./companie/router";
+import { ProductsRouter } from "./products/router";
 
 export const app = express();
 
@@ -25,3 +26,4 @@ app.get("/", (req, res) => {
 
 // routers
 app.use("/api/companie", companieRouter);
+app.use("/api", ProductsRouter);

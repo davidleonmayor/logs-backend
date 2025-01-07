@@ -1,16 +1,16 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import { validateInputs } from "../commons/middleware/resourceInputs";
-import { CompanieCont } from "./Controller";
+import { CompanieCnt } from "./Controller";
 import { CreateCompanie } from "./schema";
 
 const router = Router();
 
-router.post("/", validateInputs(CreateCompanie), CompanieCont.create);
+router.post("/", validateInputs(CreateCompanie), CompanieCnt.create);
 
-router.get("/:id", CompanieCont.getOne);
+router.get("/:id", CompanieCnt.getOne);
 
-router.delete("/:id", CompanieCont.remove);
+router.delete("/:id", CompanieCnt.remove);
 
-router.put("/:id", validateInputs(CreateCompanie), CompanieCont.update);
+router.put("/:id", validateInputs(CreateCompanie), CompanieCnt.update);
 
 export { router as companieRouter };

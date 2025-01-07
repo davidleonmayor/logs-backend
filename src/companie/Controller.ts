@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import Companie from "../../db/models/Companie";
 import { logger } from "../commons/logger/logger";
 
-export class CompanieCont {
+export class CompanieCnt {
   static async create(req: Request, res: Response) {
     const { name, address, phone, email } = req.body;
     logger.info("Creating a new company", { name, address, phone, email });

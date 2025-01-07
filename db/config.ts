@@ -22,7 +22,7 @@ export const db = new Sequelize(process.env.DATABASE_URL, {
 
 export async function initializeDB() {
   try {
-    await db.sync({ force: true }); // No elimina datos existentes
+    await db.sync({ force: false }); // No elimina datos existentes
     console.log(
       color.green.bold("Database connection has been established successfully")
     );

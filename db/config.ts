@@ -2,6 +2,7 @@ import { Sequelize } from "sequelize-typescript";
 import dotenv from "dotenv";
 import color from "colors";
 import path from "path";
+import { logger } from "../src/commons/logger/logger";
 
 dotenv.config();
 
@@ -23,11 +24,12 @@ export const db = new Sequelize(process.env.DATABASE_URL, {
 export async function initializeDB() {
   try {
     await db.sync({ force: false }); // No elimina datos existentes
+    logger.info("Database synchronized");
     console.log(
       color.green.bold("Database connection has been established successfully")
     );
   } catch (err) {
-    // console.log(err);
+    logger.error(err);
     console.log(color.red.bold("Database connection failed"));
   }
 }

@@ -66,3 +66,44 @@ export const CreateCompanie: Schema = {
     normalizeEmail: true,
   },
 };
+
+export const GetOneCompanie: Schema = {
+  companieId: {
+    in: ["params"],
+    exists: {
+      errorMessage: "ID is required",
+    },
+    isString: {
+      errorMessage: "ID must be a string",
+    },
+    isLength: {
+      options: { min: 1 },
+      errorMessage: "ID must be at least 1 character long",
+    },
+    trim: true,
+  },
+};
+
+export const ConfirmAccount: Schema = {
+  token: {
+    in: ["body"],
+    exists: {
+      errorMessage: "Token is required",
+    },
+    isNumeric: {
+      errorMessage: "Token must be a number",
+    },
+    isLength: {
+      options: { min: 6, max: 6 },
+      errorMessage: "Token must be exactly 6 digits",
+    },
+    custom: {
+      options: (value) => {
+        if (parseInt(value, 10) <= 0) {
+          throw new Error("Token must be a positive number");
+        }
+        return true;
+      },
+    },
+  },
+};

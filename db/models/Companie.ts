@@ -5,6 +5,7 @@ import {
   DataType,
   AllowNull,
   Length,
+  Unique,
 } from "sequelize-typescript";
 
 @Table({
@@ -14,10 +15,18 @@ import {
 class Companie extends Model {
   @AllowNull(false)
   @Length({ max: 100 })
+  @Unique
   @Column({
     type: DataType.STRING,
   })
   declare name: string;
+
+  // token
+  @AllowNull(true)
+  @Column({
+    type: DataType.STRING(6),
+  })
+  declare token: string;
 
   @AllowNull(false)
   @Length({ max: 150 })

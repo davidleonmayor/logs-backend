@@ -53,6 +53,18 @@ class Companie extends Model {
     },
   })
   declare email: string;
+
+  @AllowNull(false)
+  @Column({
+    type: DataType.STRING(60),
+    validate: {
+      len: {
+        args: [8, 60],
+        msg: "La contraseña debe tener al menos 8 caracteres",
+      },
+    },
+  })
+  declare password: string;
 }
 
 export default Companie;

@@ -10,18 +10,24 @@ declare global {
   }
 }
 
-export async function isAuthenticatedCompanie(
+export async function isActiveCompanie(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const { companieId } = req.params;
+  const { companieName } = req.params;
 
   const companie = await Companie.findOne({
-    where: { name: companieId },
+    where: { name: companieName },
   });
+  console.log(companie);
+  if (!companie) {
+    logger.error("Companie not found", { companieName });
+    res.status(404).json({ error: "Companie not found" });
+    return;
+  }
   if (companie.token !== "active") {
-    logger.error("Unauthorized access", { companieId });
+    logger.error("Unauthorized access", { companieName });
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
@@ -30,3 +36,30 @@ export async function isAuthenticatedCompanie(
 
   next();
 }
+
+// export async function isAuthenticatedCompanie(
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) {
+//   const { companieName } = req.params;
+
+//   const companie = await Companie.findOne({
+//     where: { name: companieName },
+//   });
+//   console.log(companie);
+//   if (!companie) {
+//     logger.error("Companie not found", { companieName });
+//     res.status(404).json({ error: "Companie not found" });
+//     return;
+//   }
+//   if (companie.token !== "active") {
+//     logger.error("Unauthorized access", { companieName });
+//     res.status(401).json({ error: "Unauthorized" });
+//     return;
+//   }
+
+//   req.authCompanie = companie;
+
+//   next();
+// }

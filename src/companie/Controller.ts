@@ -3,34 +3,43 @@ import Companie from "../../db/models/Companie";
 import { logger } from "../commons/logger/logger";
 import { AuthEmail } from "../../emails/AuthEmail";
 import { generateToken } from "./utils/token";
+import { hashPassword } from "./utils/auth";
 
 export class CompanieCnt {
   static async create(req: Request, res: Response) {
-    const { name, address, phone, email } = req.body;
-    logger.info("Creating a new company", { name, address, phone, email });
+    const { body } = req;
+    logger.info("Creating a new company", { body });
 
     try {
       // Check if the company already exists based on name
-      const companieExists = await Companie.findOne({ where: { name } });
+      const companieExists = await Companie.findOne({
+        where: { name: body.name },
+      });
       if (companieExists) {
         res.status(400).json({ error: "Companie name already exists" });
         return;
       }
 
       // Create a new companie entry in the database
+      const companie = await Companie.create(body);
+      companie.password = await hashPassword(body.password);
       const token = generateToken();
-      const companie = await Companie.create({
-        name,
-        address,
-        phone,
-        email,
-        token,
-      });
+      companie.token = token;
+
+      if (process.env.NODE_ENV !== "production") {
+        globalThis.cashTrackrConfirmationToken = token;
+      }
+
+      await companie.save();
       logger.info("Company created successfully", { companie });
 
       // Send confirmation email
-      await AuthEmail.sendConfirmationEmail({ name, email, token });
-      logger.info("Email send successfully", { email });
+      await AuthEmail.sendConfirmationEmail({
+        name: companie.name,
+        email: companie.email,
+        token: companie.token,
+      });
+      logger.info("Email send successfully", { email: companie.email });
 
       res.status(201).json({
         msg: "Companie created successfully, now verify your! Check your email...",
@@ -72,20 +81,21 @@ export class CompanieCnt {
   }
 
   static async getOne(req: Request, res: Response) {
-    const { companieId } = req.params;
-    logger.info("Getting company by id", { companieId });
+    const { companieName } = req.params;
+    logger.info("Getting company by id", { companieName });
 
     try {
       const companieExist = await Companie.findOne({
-        where: { name: companieId },
+        where: { name: companieName },
       });
       if (!companieExist) {
         res.status(404).json({ error: "Companie not found" });
         return;
       }
-
       logger.info("Company found", { companieExist });
-      res.status(200).json({ companieExist });
+
+      const { password, token, ...companie } = companieExist.toJSON();
+      res.status(200).json({ companie });
     } catch (error) {
       logger.error("Error getting company", { error: error.message });
       res
@@ -95,11 +105,12 @@ export class CompanieCnt {
   }
 
   static async remove(req: Request, res: Response) {
-    const { id } = req.params;
-    logger.info("Deleting company by id", { id });
+    const { companieName } = req.params;
 
     try {
-      const companie = await Companie.findByPk(id);
+      const companie = await Companie.findOne({
+        where: { name: companieName },
+      });
       if (!companie) {
         res.status(404).json({ error: "Companie not found" });
         return;
@@ -117,20 +128,21 @@ export class CompanieCnt {
   }
 
   static async update(req: Request, res: Response) {
-    const { id } = req.params;
-    const { name, address, phone, email } = req.body;
-    logger.info("Updating company by id", { id, name, address, phone, email });
+    const { body, authCompanie } = req;
 
     try {
-      const companie = await Companie.findByPk(id);
-      if (!companie) {
-        res.status(404).json({ error: "Companie not found" });
+      // check if the company already exists based on name
+      const companieExists = await Companie.findOne({
+        where: { name: body.name },
+      });
+      if (companieExists) {
+        res.status(400).json({ error: "Companie name already exists" });
         return;
       }
 
-      await companie.update({ name, address, phone, email });
-      logger.info("Company updated successfully", { companie });
-      res.status(200).json({ msg: "Companie updated successfully", companie });
+      await authCompanie.update(body);
+      logger.info("Company updated successfully", { companie: authCompanie });
+      res.status(200).json({ msg: "Companie updated successfully" });
     } catch (error) {
       logger.error("Error updating company", { error: error.message });
       res

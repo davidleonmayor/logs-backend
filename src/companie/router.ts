@@ -1,8 +1,14 @@
 import { Router } from "express";
 import { validateInputs } from "../commons/middleware/resourceInputs";
 import { CompanieCnt } from "./Controller";
-import { CreateCompanie, GetOneCompanie, ConfirmAccount } from "./schema";
-import { isAuthenticatedCompanie } from "../commons/middleware/userPermissions";
+import {
+  CreateCompanie,
+  GetOneCompanie,
+  ConfirmAccount,
+  DeleteCompanie,
+  UpdateCompanie,
+} from "./schema";
+import { isActiveCompanie } from "../commons/middleware/userPermissions";
 
 const router = Router();
 
@@ -13,10 +19,22 @@ router.post(
   CompanieCnt.confirmAccount
 );
 
-router.param("companieId", isAuthenticatedCompanie);
+router.param("companieName", isActiveCompanie);
 
-router.get("/:companieId", validateInputs(GetOneCompanie), CompanieCnt.getOne);
-router.delete("/:companieId", CompanieCnt.remove);
-router.put("/:id", validateInputs(CreateCompanie), CompanieCnt.update);
+router.get(
+  "/:companieName",
+  validateInputs(GetOneCompanie),
+  CompanieCnt.getOne
+);
+router.delete(
+  "/:companieName",
+  validateInputs(DeleteCompanie),
+  CompanieCnt.remove
+);
+router.patch(
+  "/:companieName",
+  validateInputs(UpdateCompanie),
+  CompanieCnt.update
+);
 
 export { router as companieRouter };

@@ -3,7 +3,7 @@ import { validateInputs } from "../common/middleware/resourceInputs";
 import { CompanieCnt } from "./Controller";
 import { GetOneCompanie, DeleteCompanie, UpdateCompanie } from "./schema";
 import { isActiveCompanie } from "../common/middleware/userPermissions";
-import { isAuthenticatedUser } from "./middleware/auth";
+import { isAuthenticatedUser } from "../common/middleware/userPermissions";
 
 const router = Router();
 

@@ -46,10 +46,11 @@ class Companie extends Model {
   declare phone: number;
 
   @AllowNull(false)
+  @Unique
   @Column({
     type: DataType.STRING,
     validate: {
-      isEmail: true, // Valida que el email sea en formato correcto
+      isEmail: true,
     },
   })
   declare email: string;

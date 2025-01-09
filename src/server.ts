@@ -4,6 +4,7 @@ import morgan from "morgan";
 import { companieRouter } from "./companie/router";
 import { ProductsRouter } from "./products/router";
 import { logger } from "./common/logger/logger";
+import { authRouter } from "./auth/router";
 
 export const app = express();
 
@@ -18,6 +19,7 @@ app.get("/api", (req, res) => {
   res.send("Hello world...");
 });
 
+app.use("/api/auth", authRouter);
 app.use("/api/companie", companieRouter);
 app.use("/api", ProductsRouter);
 

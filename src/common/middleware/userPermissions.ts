@@ -15,51 +15,13 @@ export async function isActiveCompanie(
   res: Response,
   next: NextFunction
 ) {
-  const { companieName } = req.params;
+  const { authCompanie } = req;
 
-  const companie = await Companie.findOne({
-    where: { name: companieName },
-  });
-  console.log(companie);
-  if (!companie) {
-    logger.error("Companie not found", { companieName });
-    res.status(404).json({ error: "Companie not found" });
-    return;
-  }
-  if (companie.token !== "active") {
-    logger.error("Unauthorized access", { companieName });
+  if (authCompanie.token !== "active") {
+    logger.error("Unactive companie", { authCompanie });
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
 
-  req.authCompanie = companie;
-
   next();
 }
-
-// export async function isAuthenticatedCompanie(
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) {
-//   const { companieName } = req.params;
-
-//   const companie = await Companie.findOne({
-//     where: { name: companieName },
-//   });
-//   console.log(companie);
-//   if (!companie) {
-//     logger.error("Companie not found", { companieName });
-//     res.status(404).json({ error: "Companie not found" });
-//     return;
-//   }
-//   if (companie.token !== "active") {
-//     logger.error("Unauthorized access", { companieName });
-//     res.status(401).json({ error: "Unauthorized" });
-//     return;
-//   }
-
-//   req.authCompanie = companie;
-
-//   next();
-// }

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { validateInputs } from "../commons/middleware/resourceInputs";
+import { validateInputs } from "../common/middleware/resourceInputs";
 import { ProductsCnt } from "./Controller";
 import { CreateProduct } from "./schema";
 import { validateCompanieExists } from "../companie/middleware/cheker";

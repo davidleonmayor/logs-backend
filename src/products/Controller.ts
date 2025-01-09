@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import Product from "../../db/models/Product";
-import { logger } from "../commons/logger/logger";
+import { logger } from "../common/logger/logger";
 
 export class ProductsCnt {
   static async create(req: Request, res: Response) {

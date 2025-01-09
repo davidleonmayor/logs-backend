@@ -2,7 +2,7 @@ import { Sequelize } from "sequelize-typescript";
 import dotenv from "dotenv";
 import color from "colors";
 import path from "path";
-import { logger } from "../src/commons/logger/logger";
+import { logger } from "../src/common/logger/logger";
 
 dotenv.config();
 

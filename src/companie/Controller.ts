@@ -1,11 +1,13 @@
 import type { Request, Response } from "express";
 import Companie from "../../db/models/Companie";
-import { logger } from "../commons/logger/logger";
+import { logger } from "../common/logger/logger";
 import { AuthEmail } from "../../emails/AuthEmail";
 import { generateToken } from "./utils/token";
-import { hashPassword } from "./utils/auth";
+import { checkPassword, hashPassword } from "./utils/auth";
+import { generateJWT } from "./utils/jwt";
 
 export class CompanieCnt {
+  // Auth
   static async create(req: Request, res: Response) {
     const { body } = req;
     logger.info("Creating a new company", { body });
@@ -80,6 +82,35 @@ export class CompanieCnt {
     }
   }
 
+  static async login(req: Request, res: Response) {
+    const { body, authCompanie } = req;
+
+    // Check credentials
+    const isCorrectEmail = body.email === authCompanie.email;
+    if (!isCorrectEmail) {
+      res.status(400).json({ error: "Invalid email" });
+      return;
+    }
+    const isPasswordCorrect = await checkPassword(
+      body.password,
+      authCompanie.password
+    );
+    if (!isPasswordCorrect) {
+      res.status(400).json({ error: "Invalid password" });
+      return;
+    }
+
+    // Generate token
+    const token = generateJWT({
+      id: authCompanie?.id,
+      email: authCompanie?.email,
+    });
+
+    logger.info("Company logged in successfully", { companie: authCompanie });
+    res.status(200).json({ token });
+  }
+
+  // CRUD
   static async getOne(req: Request, res: Response) {
     const { companieName } = req.params;
     logger.info("Getting company by id", { companieName });

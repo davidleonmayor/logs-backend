@@ -1,5 +1,5 @@
 import type { Schema } from "express-validator";
-
+// Auth
 export const CreateCompanie: Schema = {
   name: {
     in: ["body"],
@@ -86,23 +86,6 @@ export const CreateCompanie: Schema = {
   },
 };
 
-export const GetOneCompanie: Schema = {
-  companieName: {
-    in: ["params"],
-    exists: {
-      errorMessage: "ID is required",
-    },
-    isString: {
-      errorMessage: "ID must be a string",
-    },
-    isLength: {
-      options: { min: 1 },
-      errorMessage: "ID must be at least 1 character long",
-    },
-    trim: true,
-  },
-};
-
 export const ConfirmAccount: Schema = {
   token: {
     in: ["body"],
@@ -124,6 +107,68 @@ export const ConfirmAccount: Schema = {
         return true;
       },
     },
+  },
+};
+
+export const LoginCompanie: Schema = {
+  email: {
+    in: ["body"],
+    exists: {
+      errorMessage: "Email is required",
+    },
+    isEmail: {
+      errorMessage: "Email must be a valid email address",
+    },
+    isLength: {
+      options: { max: 100 },
+      errorMessage: "Email must not exceed 100 characters",
+    },
+    normalizeEmail: true,
+  },
+  password: {
+    in: ["body"],
+    exists: {
+      errorMessage: "Password is required",
+    },
+    isString: {
+      errorMessage: "Password must be a string",
+    },
+    isLength: {
+      options: { min: 8, max: 60 },
+      errorMessage: "Password must be between 8 and 60 characters",
+    },
+  },
+  companieName: {
+    in: ["params"],
+    exists: {
+      errorMessage: "ID is required",
+    },
+    isString: {
+      errorMessage: "ID must be a string",
+    },
+    isLength: {
+      options: { min: 1 },
+      errorMessage: "ID must be at least 1 character long",
+    },
+    trim: true,
+  },
+};
+
+// CRUD
+export const GetOneCompanie: Schema = {
+  companieName: {
+    in: ["params"],
+    exists: {
+      errorMessage: "ID is required",
+    },
+    isString: {
+      errorMessage: "ID must be a string",
+    },
+    isLength: {
+      options: { min: 1 },
+      errorMessage: "ID must be at least 1 character long",
+    },
+    trim: true,
   },
 };
 

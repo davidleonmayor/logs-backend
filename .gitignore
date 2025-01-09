@@ -10,3 +10,6 @@ coverage/
 logs/
 combined.log
 error.log
+
+private-key.pem
+public-key.pem

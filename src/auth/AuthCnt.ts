@@ -125,4 +125,58 @@ export class AuthCnt {
         .json({ error: "There was an error logging in the companie" });
     }
   }
+
+  static forgotPassword = async (req: Request, res: Response) => {
+    const { email } = req.body;
+
+    // Revisar que el usuario exista
+    const companie = await Companie.findOne({ where: { email } });
+    if (!companie) {
+      const error = new Error("Usuario no encontrado");
+      res.status(404).json({ error: error.message });
+      return;
+    }
+    if (companie.token !== "active") {
+      res.status(401).json({ error: "Unactive account" });
+      return;
+    }
+
+    companie.token = generateToken();
+    await companie.save();
+
+    await AuthEmail.sendPasswordResetToken({
+      name: companie.name,
+      email: companie.email,
+      token: companie.token,
+    });
+
+    res.json("Revisa tu email para instrucciones");
+  };
+
+  static resetPasswordWithToken = async (req: Request, res: Response) => {
+    const { token } = req.params;
+    const { password, confirmPassword } = req.body;
+
+    // Revisar que el password y confirmPassword sean iguales
+    if (password !== confirmPassword) {
+      const error = new Error("Las contraseñas no coinciden");
+      res.status(400).json({ error: error.message });
+      return;
+    }
+
+    // Revisar que el token sea válido
+    const companie = await Companie.findOne({ where: { token } });
+    if (!companie) {
+      const error = new Error("Token no válido");
+      res.status(404).json({ error: error.message });
+      return;
+    }
+
+    // Asignar el nuevo password
+    companie.password = await hashPassword(password);
+    companie.token = "active";
+    await companie.save();
+
+    res.json("El password se modificó correctamente");
+  };
 }

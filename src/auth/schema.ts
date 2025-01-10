@@ -139,3 +139,70 @@ export const LoginCompanie: Schema = {
     },
   },
 };
+
+export const ForgotPassword: Schema = {
+  email: {
+    in: ["body"],
+    exists: {
+      errorMessage: "Email is required",
+    },
+    isEmail: {
+      errorMessage: "Must be a valid email address",
+    },
+    normalizeEmail: true,
+    isLength: {
+      options: { max: 50 },
+      errorMessage: "Email must not exceed 50 characters",
+    },
+    trim: true,
+  },
+};
+
+export const ResetPassword: Schema = {
+  token: {
+    in: ["params"],
+    exists: {
+      errorMessage: "Token is required",
+    },
+    isString: {
+      errorMessage: "Token must be a string",
+    },
+    isLength: {
+      options: { min: 6, max: 6 },
+      errorMessage: "Token must be 6 characters long",
+    },
+  },
+  password: {
+    in: ["body"],
+    exists: {
+      errorMessage: "Password is required",
+    },
+    isString: {
+      errorMessage: "Password must be a string",
+    },
+    isLength: {
+      options: { min: 8, max: 60 },
+      errorMessage: "Password must be between 8 and 60 characters",
+    },
+    matches: {
+      options:
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+      errorMessage:
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+    },
+  },
+  confirmPassword: {
+    in: ["body"],
+    exists: {
+      errorMessage: "Password confirmation is required",
+    },
+    custom: {
+      options: (value: string, { req }) => {
+        if (value !== req.body.password) {
+          throw new Error("Password confirmation does not match password");
+        }
+        return true;
+      },
+    },
+  },
+};

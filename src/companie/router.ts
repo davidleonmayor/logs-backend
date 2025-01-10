@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validateInputs } from "../common/middleware/resourceInputs";
-import { CompanieCnt } from "./Controller";
+import { CompanieCnt } from "./CompanieCnt";
 import { GetOneCompanie, DeleteCompanie, UpdateCompanie } from "./schema";
 import { isActiveCompanie } from "../common/middleware/userPermissions";
 import { isAuthenticatedUser } from "../common/middleware/userPermissions";

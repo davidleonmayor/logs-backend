@@ -6,7 +6,9 @@ import {
   AllowNull,
   Length,
   Unique,
+  HasMany,
 } from "sequelize-typescript";
+import Product from "./Product";
 
 @Table({
   tableName: "companies",
@@ -66,6 +68,9 @@ class Companie extends Model {
     },
   })
   declare password: string;
+
+  @HasMany(() => Product)
+  declare products: Product[];
 }
 
 export default Companie;

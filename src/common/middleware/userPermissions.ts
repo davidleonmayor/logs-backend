@@ -37,7 +37,7 @@ export const isAuthenticatedUser = async (
     // console.log("result", result);
     if (typeof result === "object" && result.id) {
       const companie = await Companie.findByPk(result.id, {
-        attributes: { exclude: ["password", "token"] },
+        attributes: { exclude: ["password"] },
       });
       if (!companie) {
         res.status(404).json({ error: "Companie doesn't exist" });

@@ -80,3 +80,27 @@ export const validateProduct = [
     next();
   },
 ];
+
+export const getProducts: Schema = {
+  authorization: {
+    in: ["headers"],
+    exists: {
+      errorMessage: "Authorization header is required",
+    },
+    isString: {
+      errorMessage: "Authorization header must be a string",
+    },
+    isLength: {
+      options: { min: 1 },
+      errorMessage: "Authorization header must be at least 1 character long",
+    },
+    custom: {
+      options: (value) => {
+        if (!value.startsWith("Bearer ")) {
+          throw new Error("Authorization header must start with 'Bearer '");
+        }
+        return true;
+      },
+    },
+  },
+};

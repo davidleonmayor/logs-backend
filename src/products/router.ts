@@ -1,11 +1,12 @@
 import { Router } from "express";
 import multer from "multer";
 import { ProductsCnt } from "./Controller";
-import { validateProduct } from "./schema";
+import { getProducts, validateProduct } from "./schema";
 import {
   isActiveCompanie,
   isAuthenticatedUser,
 } from "../common/middleware/userPermissions";
+import { validateInputs } from "../common/middleware/resourceInputs";
 
 const router = Router();
 
@@ -32,10 +33,13 @@ router.post(
   isActiveCompanie,
   ProductsCnt.create
 );
-
-router.get("/:id", (req, res) => {
-  res.send("Hello world...");
-});
+router.get(
+  "/products",
+  validateInputs(getProducts),
+  isAuthenticatedUser,
+  isActiveCompanie,
+  ProductsCnt.get
+);
 
 // router.delete("/:id", CompanieCnt.remove);
 

@@ -7,6 +7,7 @@ import Product from "../../db/models/Product";
 import { logger } from "../common/logger/logger";
 
 import cloudinary from "../../claudinary/config";
+import Companie from "../../db/models/Companie";
 
 export class ProductsCnt {
   static async create(req: Request, res: Response) {
@@ -62,6 +63,57 @@ export class ProductsCnt {
       logger.error("Error creating product:", error);
       res.status(500).json({
         error: "Error creating product",
+        details: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  }
+
+  static async get(req: Request, res: Response) {
+    const { authCompanie } = req;
+
+    try {
+      // Parámetros de paginación
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 12; // Productos por página
+      const offset = (page - 1) * limit;
+
+      // Obtener productos con paginación
+      const { count, rows: products } = await Product.findAndCountAll({
+        where: {
+          companieId: authCompanie.id,
+        },
+        limit,
+        offset,
+        order: [["createdAt", "DESC"]], // Ordenar por más reciente
+        // include: [
+        //   {
+        //     model: Companie,
+        //     attributes: ["name"], // Solo incluir el nombre de la compañía
+        //     where: {
+        //       isActive: true, // Solo productos de compañías activas
+        //     },
+        //   },
+        // ],
+      });
+
+      // Calcular información de paginación
+      const totalPages = Math.ceil(count / limit);
+      const hasMore = page < totalPages;
+
+      res.status(200).json({
+        products,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalItems: count,
+          itemsPerPage: limit,
+          hasMore,
+        },
+      });
+    } catch (error) {
+      logger.error("Error fetching products:", error);
+      res.status(500).json({
+        error: "Error fetching products",
         details: error instanceof Error ? error.message : "Unknown error",
       });
     }

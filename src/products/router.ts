@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
-import { ProductsCnt } from "./Controller";
+import { ProductsCnt } from "./ProductsCnt";
 import { getProducts, validateProduct } from "./schema";
 import {
   isActiveCompanie,

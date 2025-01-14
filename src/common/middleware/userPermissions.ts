@@ -7,6 +7,7 @@ declare global {
   namespace Express {
     interface Request {
       authCompanie?: Companie;
+      file?: Multer.File;
     }
   }
 }

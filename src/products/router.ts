@@ -1,19 +1,41 @@
 import { Router } from "express";
-import { validateInputs } from "../common/middleware/resourceInputs";
+import multer from "multer";
 import { ProductsCnt } from "./Controller";
-import { CreateProduct } from "./schema";
-import { validateCompanieExists } from "../companie/middleware/cheker";
+import { validateProduct } from "./schema";
+import {
+  isActiveCompanie,
+  isAuthenticatedUser,
+} from "../common/middleware/userPermissions";
 
 const router = Router();
 
+// Configuración básica de multer para almacenamiento temporal
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB límite
+  },
+  fileFilter: (req, file, cb) => {
+    // Verificar que sea una imagen
+    if (!file.mimetype.startsWith("image/")) {
+      return cb(new Error("Solo se permiten archivos de imagen"));
+    }
+    cb(null, true);
+  },
+});
+
 router.post(
   "/:companieId/product",
-  validateInputs(CreateProduct),
-  validateCompanieExists,
+  upload.single("file"),
+  validateProduct,
+  isAuthenticatedUser,
+  isActiveCompanie,
   ProductsCnt.create
 );
 
-// router.get("/:id", CompanieCnt.getOne);
+router.get("/:id", (req, res) => {
+  res.send("Hello world...");
+});
 
 // router.delete("/:id", CompanieCnt.remove);
 

@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express, { urlencoded } from "express";
 import morgan from "morgan";
 
@@ -12,7 +15,7 @@ app.use(morgan("dev"));
 
 // config
 app.use(express.json());
-app.use(urlencoded({ limit: "100mb", extended: true }));
+app.use(express.urlencoded({ limit: "100mb", extended: true }));
 
 // routes
 app.get("/api", (req, res) => {
@@ -21,7 +24,7 @@ app.get("/api", (req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/companie", companieRouter);
-app.use("/api", ProductsRouter);
+app.use("/api/companie", ProductsRouter);
 
 // Error handling
 app.use((err, req, res, next) => {

@@ -37,6 +37,13 @@ class Product extends Model {
   })
   declare companieId: number;
 
+  // image
+  @AllowNull(false)
+  @Column({
+    type: DataType.STRING,
+  })
+  declare imageUrl: string;
+
   @BelongsTo(() => Companie)
   declare companie: Companie;
 }

@@ -1,4 +1,4 @@
-import type { Schema } from "express-validator";
+import { body, validationResult, type Schema } from "express-validator";
 
 export const CreateProduct: Schema = {
   name: {
@@ -47,3 +47,36 @@ export const CreateProduct: Schema = {
     toInt: true,
   },
 };
+
+export const validateProduct = [
+  body("name")
+    .exists()
+    .withMessage("Name is required")
+    .isString()
+    .withMessage("Name must be a string")
+    .isLength({ min: 3 })
+    .withMessage("Name should be at least 3 characters long"),
+
+  body("price")
+    .exists()
+    .withMessage("Price is required")
+    .isNumeric()
+    .withMessage("Price must be a valid number")
+    .isFloat({ min: 0 })
+    .withMessage("Price must be a positive number"),
+
+  body("amount")
+    .exists()
+    .withMessage("Amount is required")
+    .isInt({ min: 1 })
+    .withMessage("Amount must be a positive integer"),
+
+  // Middleware para verificar los resultados de la validación
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
+];
